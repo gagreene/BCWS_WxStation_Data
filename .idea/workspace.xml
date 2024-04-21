@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4753595b-243c-4b1d-bb56-1a3330997e52" name="Changes" comment="Changed script names;&#10;Numerous revisions to all scripts">
+    <list default="true" id="4753595b-243c-4b1d-bb56-1a3330997e52" name="Changes" comment="Added command line inputs for __name__ == '__main__'">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bcws_wxstn_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/bcws_wxstn_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bcws_wxstn_data_arcgis.py" beforeDir="false" afterPath="$PROJECT_DIR$/bcws_wxstn_data_arcgis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,12 +94,21 @@
       <option name="project" value="LOCAL" />
       <updated>1713660423999</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Added command line inputs for __name__ == '__main__'">
+      <option name="closed" value="true" />
+      <created>1713660853127</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1713660853127</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial Commit" />
     <MESSAGE value="Changed script names;&#10;Numerous revisions to all scripts" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed script names;&#10;Numerous revisions to all scripts" />
+    <MESSAGE value="Added command line inputs for __name__ == '__main__'" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added command line inputs for __name__ == '__main__'" />
   </component>
 </project>
