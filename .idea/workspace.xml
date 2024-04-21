@@ -5,7 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4753595b-243c-4b1d-bb56-1a3330997e52" name="Changes" comment="Initial Commit">
+      <change afterPath="$PROJECT_DIR$/BCWS_wxStationData_Toolbox.pyt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bcws_wxstn_data.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bcws_wxstn_data_arcgis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Download_BCWS_WxStationData.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Download_BCWS_WxStationData.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/downloadBCWS_stationData.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/downloadBCWS_stationData_arcgis.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/getBCWS_stationData.pyt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,8 +38,8 @@
 }</component>
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
-    "url": "https://github.com/gagreene/BCWS_WxStation_DataDownloader",
-    "accountId": "3abc1f3b-c5b2-4284-85be-47c6fdb98af9"
+    "url": "https://github.com/gagreene/BCWS_WxStation_DataDownloader.git",
+    "accountId": "acfbdfa7-eb1e-4ac7-90c1-f0ccb7a9c083"
   }
 }]]></component>
   <component name="ProjectColorInfo">{
@@ -46,8 +54,10 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.downloadBCWS_stationData.executor": "Debug",
+    "Python.downloadBCWS_stationData_arcgis.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/ggreene/PycharmProjects/Download_BCWS_WxStationData",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
