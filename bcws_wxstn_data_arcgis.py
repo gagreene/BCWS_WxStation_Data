@@ -9,6 +9,8 @@ __author__ = ['Gregory A. Greene, map.n.trowel@gmail.com']
 import os
 import calendar
 import datetime as dt
+import sys
+
 from dateutil.rrule import *
 from typing import Union
 import pandas as pd
@@ -277,13 +279,14 @@ def getWX(out_path: str,
 
 
 if __name__ == '__main__':
-    out_path_ = r'F:\Temp\BCWS_WxStation_DataDownloader_Testing'
-    data_type_ = 'dailies'
-    start_date_ = 2022070100
-    end_date_ = 2023083123
-    query_method_ = 'community'
-    query_names_ = ['150 Mile House', 'Williams Lake']
-    search_radius_ = 15
+    if len(sys.argv[1:]) != 8:
+        print('Three parameters are required to test the WindNinja CLI: [num_threads, vegetation, out_path]')
+        sys.exit(1)
+
+    (out_path_, data_type_,
+     start_date_, end_date_,
+     query_method_, query_names_,
+     shp_path_, search_radius_) = sys.argv[1:]
 
     getWX(
         out_path=out_path_,
@@ -292,5 +295,6 @@ if __name__ == '__main__':
         end_date=end_date_,
         query_method=query_method_,
         query_names=query_names_,
+        shp_path=shp_path_,
         search_radius=search_radius_
     )

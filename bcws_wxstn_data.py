@@ -8,6 +8,7 @@ __author__ = ['Gregory A. Greene, map.n.trowel@gmail.com']
 
 import os
 import calendar
+import sys
 from typing import Union
 import datetime as dt
 from dateutil.rrule import *
@@ -323,13 +324,14 @@ def getWX(out_path: str,
 
 
 if __name__ == '__main__':
-    out_path_ = r'C:\Temp\BCWS_weatherTesting'
-    data_type_ = 'hourlies'
-    start_date_ = 2022070100
-    end_date_ = 2022083123
-    query_method_ = 'station'
-    query_names_ = ['KNIFE']
-    search_radius_ = 15
+    if len(sys.argv[1:]) != 8:
+        print('Three parameters are required to test the WindNinja CLI: [num_threads, vegetation, out_path]')
+        sys.exit(1)
+
+    (out_path_, data_type_,
+     start_date_, end_date_,
+     query_method_, query_names_,
+     shp_path_, search_radius_) = sys.argv[1:]
 
     getWX(
         out_path=out_path_,

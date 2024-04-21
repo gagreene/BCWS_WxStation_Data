@@ -4,16 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4753595b-243c-4b1d-bb56-1a3330997e52" name="Changes" comment="Initial Commit">
-      <change afterPath="$PROJECT_DIR$/BCWS_wxStationData_Toolbox.pyt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bcws_wxstn_data.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bcws_wxstn_data_arcgis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Download_BCWS_WxStationData.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Download_BCWS_WxStationData.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="4753595b-243c-4b1d-bb56-1a3330997e52" name="Changes" comment="Changed script names;&#10;Numerous revisions to all scripts">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/downloadBCWS_stationData.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/downloadBCWS_stationData_arcgis.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/getBCWS_stationData.pyt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bcws_wxstn_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/bcws_wxstn_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bcws_wxstn_data_arcgis.py" beforeDir="false" afterPath="$PROJECT_DIR$/bcws_wxstn_data_arcgis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,11 +88,20 @@
       <option name="project" value="LOCAL" />
       <updated>1713635306085</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Changed script names;&#10;Numerous revisions to all scripts">
+      <option name="closed" value="true" />
+      <created>1713660423999</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1713660423999</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial Commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial Commit" />
+    <MESSAGE value="Changed script names;&#10;Numerous revisions to all scripts" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed script names;&#10;Numerous revisions to all scripts" />
   </component>
 </project>
