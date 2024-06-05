@@ -280,7 +280,8 @@ def getWX(out_path: str,
 
 if __name__ == '__main__':
     if len(sys.argv[1:]) != 8:
-        print('Three parameters are required to test the WindNinja CLI: [num_threads, vegetation, out_path]')
+        print('Eight parameters are required: [out_path_, data_type_, start_date_, '
+              'end_date_, query_method_, query_names_, shp_path_, search_radius_]')
         sys.exit(1)
 
     (out_path_, data_type_,
