@@ -9,8 +9,9 @@ __author__ = ['Gregory A. Greene, map.n.trowel@gmail.com']
 import os
 import calendar
 import sys
-from typing import Union
+from typing import Union, Optional
 import datetime as dt
+from datetime import timedelta
 from dateutil.rrule import *
 import ast
 import pandas as pd
@@ -30,7 +31,7 @@ community_shp = os.path.join(os.path.dirname(__file__),
 base_url = 'https://bcwsapi.nrs.gov.bc.ca/wfwx-datamart-api/v1'
 
 
-def getShapefile(in_path: str):
+def _getShapefile(in_path: str):
     """
     Function returns a fiona collection object representing the shapefile
     :param in_path: path to shapefile
@@ -39,9 +40,9 @@ def getShapefile(in_path: str):
     return fio.open(in_path, 'r')
 
 
-def projectShapefile(src: fio.Collection,
-                     new_crs: int,
-                     out_path: str):
+def _projectShapefile(src: fio.Collection,
+                      new_crs: int,
+                      out_path: str):
     """
     Function returns a fiona collection object representing the shapefile
     :param src: fiona collection object
@@ -69,22 +70,134 @@ def projectShapefile(src: fio.Collection,
     return fio.open(out_path, 'r')
 
 
+def _getFilteredMonthDays(start_date_str: str,
+                          end_date_str: str,
+                          filter_month_days: bool) -> list[tuple]:
+    """
+    Function to generate the start and end dates for each month within a start and end date range
+    :param start_date_str: Start date of weather stream (formatted as yyyymmddhh);
+        Days start at 12am (hh = 00) and end at 11pm (hh = 23). For Daily data, use 00 as the start time.
+    :param end_date_str: End date of weather stream (formatted as yyyymmddhh);
+        Days start at 12am (hh = 00) and end at 11pm (hh = 23). For Daily data, use 23 as the end time.
+    :param filter_month_days: Filter dates to be within the months and days provided for each year.
+        If False, data from all dates within the start and end dates will be requested.
+    :return: List containing tuple pairs of the start/end dates for each month
+    """
+    # Parse the input date strings
+    start_date = dt.datetime.strptime(start_date_str, '%Y%m%d%H')
+    end_date = dt.datetime.strptime(end_date_str, '%Y%m%d%H')
+    mmdd_start = dt.datetime.strptime(start_date_str[4:8], '%m%d').date().replace(year=2020)
+    mmdd_end = dt.datetime.strptime(end_date_str[4:8], '%m%d').date().replace(year=2020)
+
+    # Create a list to store the first and last days of each filtered month
+    month_boundaries = []
+
+    # Set the current date to the start of the month for the start_date
+    current_date = start_date.replace(day=1)
+
+    while current_date <= end_date:
+        # Get the first day of the current month
+        first_day = current_date
+
+        # Get the last day of the current month
+        last_day = current_date.replace(day=calendar.monthrange(current_date.year, current_date.month)[1])
+
+        # Ensure the last day does not exceed the end_date
+        if last_day > end_date:
+            last_day = end_date
+
+        if filter_month_days:
+            # Filter out months that do not fall within the specified MMDD range
+            first_mmdd = first_day.date().replace(year=2020)
+            last_mmdd = last_day.date().replace(year=2020)
+
+            if mmdd_start <= first_mmdd <= mmdd_end or mmdd_start <= last_mmdd <= mmdd_end:
+                # Adjust the first day to be within the range if it starts before mmdd_start
+                if first_mmdd < mmdd_start:
+                    first_day = first_day.replace(month=mmdd_start.month, day=mmdd_start.day)
+
+                # Adjust the last day to be within the range if it ends after mmdd_end
+                if last_mmdd > mmdd_end:
+                    last_day = last_day.replace(month=mmdd_end.month, day=mmdd_end.day)
+
+                # Convert dates to YYYYMMDDHH format
+                first_day_str = first_day.replace(hour=0).strftime('%Y%m%d%H')
+                last_day_str = last_day.replace(hour=23).strftime('%Y%m%d%H')
+
+                # Add first and last day of the month to the month_boundaries list
+                month_boundaries.append((first_day_str, last_day_str))
+        else:
+            # Assign first and last day values as strings
+            first_day_str = first_day.strftime('%Y%m%d%H')
+            last_day_str = last_day.strftime('%Y%m%d%H')
+
+            # Add first and last day of the month to the month_boundaries list
+            month_boundaries.append((first_day_str, last_day_str))
+
+        # Move to the first day of the next month
+        if current_date.month == 12:
+            current_date = current_date.replace(year=current_date.year + 1, month=1)
+        else:
+            current_date = current_date.replace(month=current_date.month + 1, day=1)
+
+    return month_boundaries
+
+
+def _getFilteredHours(hourly_df: pd.DataFrame,
+                      date_column: str,
+                      start_date_str: str,
+                      end_date_str: str) -> pd.DataFrame:
+    """
+    Function to remove rows from a Pandas dataframe where hours are outside a provided range
+    :param hourly_df: Pandas dataframe containing hourly data
+    :param date_column: Name of the hourly data column
+    :param start_date_str: Start date of weather stream (formatted as yyyymmddhh);
+        Days start at 12am (hh = 00) and end at 11pm (hh = 23).
+    :param end_date_str: End date of weather stream (formatted as yyyymmddhh);
+        Days start at 12am (hh = 00) and end at 11pm (hh = 23).
+    :return: A filtered Pandas dataframe, with hours outside the start and end date hours removed
+    """
+    # Convert the date strings to datetime objects
+    hourly_df['NewDates'] = pd.to_datetime(hourly_df[date_column], format='%Y%m%d%H')
+
+    # Extract the hour component from the datetime objects
+    hourly_df['Hour'] = hourly_df['NewDates'].dt.hour
+
+    # Convert hh_start and hh_end to integers
+    hh_start = int(start_date_str[8:])
+    hh_end = int(end_date_str[8:])
+
+    # Filter the rows based on the specified hour range
+    filtered_df = hourly_df[(hourly_df['Hour'] >= hh_start) & (hourly_df['Hour'] <= hh_end)]
+
+    # Drop the 'Hour' column as it is no longer needed
+    filtered_df = filtered_df.drop(columns=['Hour', 'NewDates'])
+
+    return filtered_df
+
+
 def getWX(out_path: str,
           data_type: str,
           start_date: Union[int, str],
           end_date: Union[int, str],
+          filter_month_days: bool,
+          filter_hours: bool,
           query_method: str,
-          query_names: Union[list[str], None] = None,
-          shp_path: Union[str, None] = None,
-          search_radius: Union[float, None] = None) -> None:
+          query_names: Optional[list[str]] = None,
+          shp_path: Optional[str] = None,
+          search_radius: Optional[float] = None) -> None:
     """
     Function to get BCWS weather station data through the weather station API
     :param out_path: path to save BCWS weather station data (will be stored in 'BCWS_WxStn_Downloads' folder)
     :param data_type: Type of data to download ('dailies' or 'hourlies')
     :param start_date: Start date of weather stream (formatted as yyyymmddhh);
-        Days start at 12am (hh = 00) and end at 11pm (hh = 23). For Daily data, use 00 as the start hour.
+        Days start at 12am (hh = 00) and end at 11pm (hh = 23). For Daily data, use 00 as the start time.
     :param end_date: End date of weather stream (formatted as yyyymmddhh);
-        Days start at 12am (hh = 00) and end at 11pm (hh = 23). For Daily data, use 23 as the end hour.
+        Days start at 12am (hh = 00) and end at 11pm (hh = 23). For Daily data, use 23 as the end time.
+    :param filter_month_days: Filter annual dates to be within the months and days provided by the start and end dates.
+        If False, data from all dates within the start and end dates will be requested.
+    :param filter_hours: Filter hourly data per day to be within the hours provided by the start and end dates.
+        If False, all hours within the start and end dates will be requested.
     :param query_method: Method to query weather data (by 'station', 'community', or 'shapefile')
     :param query_names: BC Wx Station name (STTN_NM; e.g., 'KNIFE'), or BC Community name (Name; e.g., '150 Mile House')
     :param shp_path: Path to shapefile - only used if query_method set to 'shapefile'
@@ -118,37 +231,8 @@ def getWX(out_path: str,
 
     # ### GENERATE WEATHER DATE LIST
     print('Generating weather dates list')
-    # Get year, month, and day from start and end dates
-    start_year = int(start_date[0:4])
-    start_month = int(start_date[4:6])
-    start_day = int(start_date[6:8])
-    end_year = int(end_date[0:4])
-    end_month = int(end_date[4:6])
-    end_day = int(end_date[6:8])
-
-    # Create datetime objects from start and end dates
-    date_start = dt.date(start_year, start_month, start_day)
-    date_end = dt.date(end_year, end_month, end_day)
-
-    # Generate list of months between start and end dates
-    month_list = [month.isoformat() for month in rrule(MONTHLY, dtstart=date_start, until=date_end)]
-
-    # Create start date list contianing dates for the first day of each month
-    start_date_list = [date[:10].replace('-', '') + '00' for date in month_list]
-    # Replace first start date with the user provided start_date
-    start_date_list[0] = start_date
-
-    # Create end date list contianing dates for the last day of each month
-    end_date_list = [date[:10].replace('-', '') + '23' for date in month_list]
-    end_date_list = [date[0:6] +
-                     date[6:8].replace('01', str(calendar.monthrange(int(date[0:4]), int(date[4:6]))[1])) +
-                     date[8:]
-                     for date in end_date_list]
-    # Replace last end date with the use provided end_date
-    end_date_list[-1] = end_date
-
-    # Zip the start and end dates together into a weather date list
-    wx_dates = list(zip(start_date_list, end_date_list))
+    # Generate list of dates between start and end date
+    wx_dates = _getFilteredMonthDays(start_date, end_date, filter_month_days)
 
     # ### GENERATE URLS BY QUERY METHOD
     print('Generating request URLs')
@@ -165,7 +249,7 @@ def getWX(out_path: str,
 
     elif query_method == 'community':
         # Open community shapefile with Fiona
-        in_shp = getShapefile(community_shp)
+        in_shp = _getShapefile(community_shp)
 
         # Get list of coordinates from community shapefile
         coord_list = [feat['geometry']['coordinates'] for feat in in_shp
@@ -189,7 +273,7 @@ def getWX(out_path: str,
         shp_name = shp_path.split('\\')[-1].split('.')[0]
 
         # Open shapefile with Fiona
-        in_shp = getShapefile(shp_path)
+        in_shp = _getShapefile(shp_path)
 
         # Verify projection is WGS84 (EPSG:4326)
         temp_path = None
@@ -200,7 +284,7 @@ def getWX(out_path: str,
                 os.makedirs(temp_path)
             # Reproject shapefile to WGS84
             shp_path = os.path.join(temp_path, shp_name + '_EPSG4326.shp')
-            in_shp = projectShapefile(in_shp, new_crs=4326, out_path=shp_path)
+            in_shp = _projectShapefile(in_shp, new_crs=4326, out_path=shp_path)
 
         # Get shapefile geometry type
         shp_type = in_shp.schema['geometry']
@@ -223,6 +307,7 @@ def getWX(out_path: str,
         else:
             # Get the bounding box of all polygons in the shapefile
             bbox_list = []
+
             def explode(coords):
                 for e in coords:
                     if isinstance(e, (float, int)):
@@ -245,7 +330,7 @@ def getWX(out_path: str,
                         )
 
     # ### GET REQUESTED DATA
-    print('Processing data request...')
+    print('Submitting data request...')
     # Create request header
     headers = {
         'Cookie': 'ROUTEID=.3',
@@ -274,71 +359,103 @@ def getWX(out_path: str,
                 page_url = f'{url}&pageNumber={i}&pageRowCount=100'
                 responses.append(pd.DataFrame(requests.get(page_url, headers=headers).json()['collection']))
 
-    # Generate data_df from list of responses
-    data_df = pd.concat(responses)
+    if len(responses) > 0:
+        # Generate data_df from list of responses
+        print('Processing data...')
+        data_df = pd.concat(responses)
 
-    # Remove unnecessary data from data_df
-    data_df = data_df.iloc[:, 2:]
-    data_df = data_df.drop(columns='geometry')
-    data_df = data_df.drop_duplicates()
+        # Remove unnecessary data from data_df
+        data_df = data_df.iloc[:, 2:]
+        data_df = data_df.drop(columns='geometry')
+        data_df = data_df.drop_duplicates()
 
-    # Sort data_df by stationName and weatherTimestamp
-    data_df.sort_values(by=['stationName', 'weatherTimestamp'],
-                        ascending=[True, True],
-                        inplace=True)
+        # Sort data_df by stationName and weatherTimestamp
+        data_df.sort_values(by=['stationName', 'weatherTimestamp'],
+                            ascending=[True, True],
+                            inplace=True)
 
-    # Save data to out_path folder
-    if query_method == 'station':
-        if len(query_names) > 1:
-            out_name = 'MultipleStations'
-        else:
-            out_name = query_names[0].replace(' ', '_')
-        data_df.to_csv(
-            f'{out_path}//{data_type}_{out_name}_{start_date}_to_{end_date}.csv',
-            index=False)
-    elif query_method == 'community':
-        if len(query_names) > 1:
-            out_name = 'MultipleCommunities'
-        else:
-            out_name = query_names[0].replace(' ', '_')
-        data_df.to_csv(
-            f'{out_path}//{data_type}_{out_name}_{search_radius}kmBuffer_{start_date}_to_{end_date}.csv',
-            index=False)
-    else:  # query_method == 'shapefile'
-        if shp_type == 'Point':
+        # Remove unrequested hours
+        if filter_hours:
+            data_df = _getFilteredHours(hourly_df=data_df,
+                                        date_column='weatherTimestamp',
+                                        start_date_str=start_date,
+                                        end_date_str=end_date)
+
+        # Save data to out_path folder
+        if query_method == 'station':
+            if len(query_names) > 1:
+                out_name = 'MultipleStations'
+            else:
+                out_name = query_names[0].replace(' ', '_')
             data_df.to_csv(
-                f'{out_path}//{data_type}_{shp_name}_{search_radius}kmBuffer_{start_date}_to_{end_date}.csv',
+                f'{out_path}//{data_type}_{out_name}_{start_date}_to_{end_date}.csv',
                 index=False)
-        else:  # shp_type == 'polygon'
+        elif query_method == 'community':
+            if len(query_names) > 1:
+                out_name = 'MultipleCommunities'
+            else:
+                out_name = query_names[0].replace(' ', '_')
             data_df.to_csv(
-                f'{out_path}//{data_type}_{shp_name}_{start_date}_to_{end_date}.csv',
+                f'{out_path}//{data_type}_{out_name}_{search_radius}kmBuffer_{start_date}_to_{end_date}.csv',
                 index=False)
-        # Delete temporary
-        if temp_path is not None:
-            if os.path.exists(shp_path):
-                os.remove(shp_path)
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
+        else:  # query_method == 'shapefile'
+            if shp_type == 'Point':
+                data_df.to_csv(
+                    f'{out_path}//{data_type}_{shp_name}_{search_radius}kmBuffer_{start_date}_to_{end_date}.csv',
+                    index=False)
+            else:  # shp_type == 'polygon'
+                data_df.to_csv(
+                    f'{out_path}//{data_type}_{shp_name}_{start_date}_to_{end_date}.csv',
+                    index=False)
+            # Delete temporary
+            if temp_path is not None:
+                if os.path.exists(shp_path):
+                    os.remove(shp_path)
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
 
-    print('Data saved!')
+        print('Data saved!')
+    else:
+        print('No data was found for the dates provided.')
 
 
 if __name__ == '__main__':
-    if len(sys.argv[1:]) != 8:
-        print('Eight parameters are required: [out_path_, data_type_, start_date_, '
-              'end_date_, query_method_, query_names_, shp_path_, search_radius_]')
-        sys.exit(1)
+    # if len(sys.argv[1:]) != 9:
+    #     print('Nine parameters are required: [out_path_, data_type_, start_date_, end_date_, '
+    #           'filter_month_days_, filter_hours_, query_method_, query_names_, shp_path_, search_radius_]')
+    #     sys.exit(1)
+    #
+    # (out_path_, data_type_,
+    #  start_date_, end_date_,
+    #  filter_month_days_, filter_hours_,
+    #  query_method_, query_names_,
+    #  shp_path_, search_radius_) = sys.argv[1:]
 
+    # FOR TESTING
     (out_path_, data_type_,
      start_date_, end_date_,
+     filter_month_days_, filter_hours_,
      query_method_, query_names_,
-     shp_path_, search_radius_) = sys.argv[1:]
+     shp_path_, search_radius_) = (
+        os.path.join(r'F:\Temp\BCWS_WxStation_DataDownloader_Testing'),
+        'hourlies',
+        '2014051508',
+        '2017083112',
+        True,
+        True,
+        'station',
+        ['KNIFE'],
+        None,
+        None
+    )
 
     getWX(
         out_path=out_path_,
         data_type=data_type_,
         start_date=start_date_,
         end_date=end_date_,
+        filter_month_days=filter_month_days_,
+        filter_hours=filter_hours_,
         query_method=query_method_,
         query_names=query_names_,
         search_radius=search_radius_

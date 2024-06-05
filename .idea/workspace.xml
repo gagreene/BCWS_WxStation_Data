@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4753595b-243c-4b1d-bb56-1a3330997e52" name="Changes" comment="Removed Exclude_Data directory" />
+    <list default="true" id="4753595b-243c-4b1d-bb56-1a3330997e52" name="Changes" comment="Added functionality to filter out dates by month/day and hour">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Download_BCWS_WxStationData.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Download_BCWS_WxStationData.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2024-04-20_11_12_a_m__[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2024-04-20_11_12_a_m___Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bcws_wxstn_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/bcws_wxstn_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bcws_wxstn_data_arcgis.py" beforeDir="false" afterPath="$PROJECT_DIR$/bcws_wxstn_data_arcgis.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,7 +37,7 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/gagreene/BCWS_WxStation_DataDownloader.git&quot;,
+    &quot;url&quot;: &quot;https://github.com/gagreene/BCWS_WxStation_Data.git&quot;,
     &quot;accountId&quot;: &quot;acfbdfa7-eb1e-4ac7-90c1-f0ccb7a9c083&quot;
   }
 }</component>
@@ -41,17 +50,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.downloadBCWS_stationData.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.downloadBCWS_stationData_arcgis.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ggreene/PycharmProjects/Download_BCWS_WxStationData&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.bcws_wxstn_data.executor": "Debug",
+    "Python.bcws_wxstn_data_arcgis.executor": "Run",
+    "Python.downloadBCWS_stationData.executor": "Debug",
+    "Python.downloadBCWS_stationData_arcgis.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Owner/PycharmProjects/BCWS_WxStation_Data_ArcGISToolbox",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ggreene\PycharmProjects\Download_BCWS_WxStationData" />
@@ -64,7 +75,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-0509580d9d50-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.14494.241" />
+        <option value="bundled-python-sdk-babbdf50b680-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.15989.155" />
       </set>
     </attachedChunks>
   </component>
@@ -133,7 +144,15 @@
       <option name="project" value="LOCAL" />
       <updated>1713661568712</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Revised error print statement in __name__ == '__main__'">
+      <option name="closed" value="true" />
+      <created>1717610509162</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1717610509162</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -142,6 +161,18 @@
     <MESSAGE value="Added command line inputs for __name__ == '__main__'" />
     <MESSAGE value="Created gitignore" />
     <MESSAGE value="Removed Exclude_Data directory" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed Exclude_Data directory" />
+    <MESSAGE value="Revised error print statement in __name__ == '__main__'" />
+    <option name="LAST_COMMIT_MESSAGE" value="Revised error print statement in __name__ == '__main__'" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bcws_wxstn_data.py</url>
+          <line>384</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
